@@ -1,4 +1,5 @@
 using Test, Printf
+using Base: Cartesian
 
 # radix sort pass from base
 function radix_sort_pass!(t, lo, hi, offset, counts, v, shift, chunk_size)
@@ -30,12 +31,6 @@ function radix_sort_pass!(t, lo, hi, offset, counts, v, shift, chunk_size)
     end
 end
 
-macro repeat4x(a)
-    quote
-        $a; $a; $a; $a
-    end |> esc
-end
-
 # radix sort pass with unrolled loop
 function radix_sort_pass_unrolled!(t, lo, hi, offset, counts, v, shift, chunk_size)
     mask = UInt(1) << chunk_size - 1  # mask is defined in pass so that the compiler
@@ -50,7 +45,7 @@ function radix_sort_pass_unrolled!(t, lo, hi, offset, counts, v, shift, chunk_si
             counts[i] += 1            # increment that bucket's count
             k += 1
         end
-        
+
         counts[1] = lo                # set target index for the first bucket
         cumsum!(counts, counts)       # set target indices for subsequent buckets
         # counts[1:mask+1] now stores indices where the first member of each bucket
@@ -61,7 +56,7 @@ function radix_sort_pass_unrolled!(t, lo, hi, offset, counts, v, shift, chunk_si
         #original loop unrolled 4x
         k = lo
         while k <= hi - 4
-            @repeat4x begin
+            Cartesian.@nexprs 4 _ -> begin
                 x = v[k]                  # lookup the element
                 i = (x >> shift)&mask + 1 # compute its bucket's index for this pass
                 j = counts[i]             # lookup the target index
@@ -69,7 +64,7 @@ function radix_sort_pass_unrolled!(t, lo, hi, offset, counts, v, shift, chunk_si
                 counts[i] = j + 1         # increment the target index for the next
                 k += 1                    #  ↳ element in this bucket
             end
-        end                           
+        end 
         while k <= hi
             x = v[k]                  # lookup the element
             i = (x >> shift)&mask + 1 # compute its bucket's index for this pass
