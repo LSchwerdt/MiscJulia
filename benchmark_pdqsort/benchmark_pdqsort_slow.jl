@@ -53,9 +53,9 @@ function sort64bench(sizes)
 		v = rand(Int64,n)
 		v1 = copy(v)
 		v2 = copy(v)
-		GC.gc()		
-        t[idx,1] = @elapsed sort!(v)
-		t[idx,2] = @elapsed sort!(v1, alg=BranchlessPdqSort)
+		GC.gc()        
+		t[idx,1] = @elapsed sort!(v1, alg=BranchlessPdqSort)
+		t[idx,2] = @elapsed sort!(v)
 		@assert v == v1
 		t[idx,3] = @elapsed sort!(v2, alg=Base.Sort.ScratchQuickSort())
 	end
@@ -66,21 +66,23 @@ end;
 
 # ╔═╡ eb917d4f-facf-497f-a3aa-d3d86058b642
 let
-plt = Plots.scatter(sizes,sizes./t64,xaxis=:log,yaxis=:log,xlabel="Input Size / Elements",ylabel= "Elements / Second",label=["sort!" "sort!, alg=BranchlessPdqSort" "sort!, alg=ScratchQuickSort"],legend=:bottomleft,xticks=10.0 .^ (2:9),minorticks=10,title="sort! rand(Int64,n)")
+plt = Plots.scatter(sizes,sizes./t64,xaxis=:log,yaxis=:log,xlabel="Input Size / Elements",ylabel= "Elements / Second",label=["sort!, alg=BranchlessPdqSort" "sort!" "sort!, alg=ScratchQuickSort"],legend=:bottomleft,xticks=10.0 .^ (2:9),minorticks=10,title="sort! rand(Int64,n)")
 Plots.ylims!(1e7, 1e8)
 Plots.xlims!(1e2, 1e9)
 savePlots && Plots.savefig("pdqSort_bench_Int64.png")
+savePlots && Plots.savefig("pdqSort_bench_Int64.svg")
 plt
 end
 
 # ╔═╡ e1abc3e7-93d7-4be6-865a-06b99bf93158
 let
-plt = Plots.scatter(sizes,t64[:,1]./t64[:,2],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sort!",label="BranchlessPdqSort",xticks=10.0 .^ (2:9),minorticks=10,alpha = 1.0)
+plt = Plots.scatter(sizes,t64[:,2]./t64[:,1],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sort!",label="BranchlessPdqSort",xticks=10.0 .^ (2:9),minorticks=10,alpha = 1.0)
 Plots.hline!([1],lw=2,label="sort!")
-Plots.scatter!(sizes,t64[:,1]./t64[:,3],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sort!",label="ScratchQuickSort",legend=:topright,xticks=10.0 .^ (2:9),minorticks=10,alpha = 1.0, title="sort! rand(Int64,n)")
+Plots.scatter!(sizes,t64[:,2]./t64[:,3],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sort!",label="ScratchQuickSort",legend=:topright,xticks=10.0 .^ (2:9),minorticks=10,alpha = 1.0, title="sort! rand(Int64,n)")
 Plots.ylims!(0.5, 2.5)
 Plots.xlims!(1e2, 1e9)
 savePlots && Plots.savefig("pdqSort_bench_Int64_speedup.png")
+savePlots && Plots.savefig("pdqSort_bench_Int64_speedup.svg")
 plt
 end
 
@@ -111,6 +113,7 @@ plt = Plots.scatter(sizes,sizes./t128,xaxis=:log,yaxis=:log,xlabel="Input Size /
 Plots.ylims!(1e7, 1e8)
 Plots.xlims!(1e2, 1e9)
 savePlots && Plots.savefig("pdqSort_bench_Int128.png")
+savePlots && Plots.savefig("pdqSort_bench_Int128.svg")
 plt
 end
 
@@ -121,6 +124,7 @@ Plots.hline!([1],lw=2,label="sort!")
 Plots.xlims!(1e2, 1e9)
 Plots.ylims!(0, 2.1)
 savePlots && Plots.savefig("pdqSort_bench_Int128_speedup.png")
+savePlots && Plots.savefig("pdqSort_bench_Int128_speedup.svg")
 plt
 end
 
@@ -171,6 +175,7 @@ plt = groupedbar(
 	size=(800,480)
 	)
 	savePlots && Plots.savefig("pdqSort_bench_specialinputs.png")
+	savePlots && Plots.savefig("pdqSort_bench_specialinputs.svg")
 	plt
 end
 
@@ -218,10 +223,10 @@ function sortpermbench(sizes)
 	for (idx,n) in enumerate(sizes)
 		v = rand(UInt64,n)
 		GC.gc()
-        t[idx,1] = @elapsed sort(v)
+		t[idx,1] = @elapsed p2 = pdqsortperm(v)        
 		t[idx,2] = @elapsed p1 = sortperm(v)
-		t[idx,3] = @elapsed sortperm(v, alg=MergeSort)		
-		t[idx,4] = @elapsed p2 = pdqsortperm(v)
+		t[idx,3] = @elapsed sortperm(v, alg=MergeSort)
+		t[idx,4] = @elapsed sort(v)
 		@assert p1 == p2
 	end
 	t
@@ -233,21 +238,23 @@ tp = sortpermbench(sizes);
 
 # ╔═╡ 43057eed-1b3c-4813-96be-aa6da06182ee
 let
-plt = Plots.scatter(sizes,sizes./tp,xaxis=:log,yaxis=:log,xlabel="Input Size / Elements",ylabel= "Elements / Second",label=["sort" "sortperm" "sortperm, alg=MergeSort" "packed pdq sortperm"],legend=:bottomleft,xticks=10.0 .^ (2:9),minorticks=10,title="sort/sortperm rand(Int64,n)")
+plt = Plots.scatter(sizes,sizes./tp,xaxis=:log,yaxis=:log,xlabel="Input Size / Elements",ylabel= "Elements / Second",label=["packed pdq sortperm" "sortperm" "sortperm, alg=MergeSort" "sort"],legend=:bottomleft,xticks=10.0 .^ (2:9),minorticks=10,title="sort/sortperm rand(Int64,n)")
 Plots.xlims!(1e2, 1e9)
 #Plots.ylims!(1e5, 1e8)
 savePlots && Plots.savefig("pdqSort_bench_sortperm.png")
+savePlots && Plots.savefig("pdqSort_bench_sortperm.svg")
 plt
 end
 
 # ╔═╡ f0e95849-88ca-4fe5-bdea-ed67cd38ba44
 let
-plt = Plots.scatter(sizes,tp[:,2]./tp[:,1],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sortperm",label="sort",legend=:topleft,xticks=10.0 .^ (2:9),minorticks=10,alpha = 1.0)
+plt = Plots.scatter(sizes,tp[:,2]./tp[:,1],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sortperm",label="packed pdq sortperm",legend=:topleft,xticks=10.0 .^ (2:9),minorticks=10,alpha = 1.0)
 Plots.hline!([1],lw=2,label="sortperm")
-Plots.scatter!(sizes,tp[:,2]./tp[:,3:4],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sortperm",label=["sortperm, alg=MergeSort" "packed pdq sortperm"],title="sort/sortperm rand(Int64,n)")
+Plots.scatter!(sizes,tp[:,2]./tp[:,3:4],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sortperm",label=["sortperm, alg=MergeSort" "sort"],title="sort/sortperm rand(Int64,n)")
 #Plots.ylims!(0, 30)
 Plots.xlims!(1e2, 1e9)
 savePlots && Plots.savefig("pdqSort_bench_sortperm_speedup.png")
+savePlots && Plots.savefig("pdqSort_bench_sortperm_speedup.svg")
 plt
 end
 
