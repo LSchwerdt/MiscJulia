@@ -183,6 +183,9 @@ end
 md"## Prototype packed sortperm"
 
 # ╔═╡ 063f6e43-9b6f-4b91-b347-900a4e87ab2d
+# ╠═╡ disabled = true
+# ╠═╡ skip_as_script = true
+#=╠═╡
 begin
 pack64(a::UInt64, b) = UInt128(a)<<64 + b
 pack64(a::Int64, b) = Int128(a)<<64 + b
@@ -232,11 +235,19 @@ function sortpermbench(sizes)
 	t
 end
 end
+  ╠═╡ =#
 
 # ╔═╡ a5764ba0-e52c-4e26-b2bd-d8d665562b78
+# ╠═╡ disabled = true
+# ╠═╡ skip_as_script = true
+#=╠═╡
 tp = sortpermbench(sizes);
+  ╠═╡ =#
 
 # ╔═╡ 43057eed-1b3c-4813-96be-aa6da06182ee
+# ╠═╡ disabled = true
+# ╠═╡ skip_as_script = true
+#=╠═╡
 let
 plt = Plots.scatter(sizes,sizes./tp,xaxis=:log,yaxis=:log,xlabel="Input Size / Elements",ylabel= "Elements / Second",label=["packed pdq sortperm" "sortperm" "sortperm, alg=MergeSort" "sort"],legend=:bottomleft,xticks=10.0 .^ (2:9),minorticks=10,title="sort/sortperm rand(Int64,n)")
 Plots.xlims!(1e2, 1e9)
@@ -245,8 +256,12 @@ savePlots && Plots.savefig("pdqSort_bench_sortperm.png")
 savePlots && Plots.savefig("pdqSort_bench_sortperm.svg")
 plt
 end
+  ╠═╡ =#
 
 # ╔═╡ f0e95849-88ca-4fe5-bdea-ed67cd38ba44
+# ╠═╡ disabled = true
+# ╠═╡ skip_as_script = true
+#=╠═╡
 let
 plt = Plots.scatter(sizes,tp[:,2]./tp[:,1],xaxis=:log,xlabel="Input Size / Elements",ylabel= "Speedup vs sortperm",label="packed pdq sortperm",legend=:topleft,xticks=10.0 .^ (2:9),minorticks=10,alpha = 1.0)
 Plots.hline!([1],lw=2,label="sortperm")
@@ -257,6 +272,7 @@ savePlots && Plots.savefig("pdqSort_bench_sortperm_speedup.png")
 savePlots && Plots.savefig("pdqSort_bench_sortperm_speedup.svg")
 plt
 end
+  ╠═╡ =#
 
 # ╔═╡ aaa96bad-f4cc-45b4-b6c7-600ff1ff5af8
 versioninfo()
@@ -279,7 +295,7 @@ versioninfo()
 # ╟─3f618c37-5083-40a7-a442-c67406194399
 # ╟─2510e38d-2144-42a5-be01-683ad4f66fa8
 # ╟─4118dc85-edc6-4c24-839e-b34bdcf9d00f
-# ╠═063f6e43-9b6f-4b91-b347-900a4e87ab2d
+# ╟─063f6e43-9b6f-4b91-b347-900a4e87ab2d
 # ╟─a5764ba0-e52c-4e26-b2bd-d8d665562b78
 # ╟─43057eed-1b3c-4813-96be-aa6da06182ee
 # ╟─f0e95849-88ca-4fe5-bdea-ed67cd38ba44
