@@ -46,13 +46,16 @@ md"## Int64"
 md"## Int128"
 
 # ╔═╡ 1b164d4c-793f-45e7-bfe7-d2b9ad5b4628
-md"## Int64 by=x->x*x"
+md"## Int64 by=abs2"
 
 # ╔═╡ 2c5c3d86-bf61-42ff-8b56-59e6e06159c5
 md"## Int64, almost presorted"
 
 # ╔═╡ ae489bbb-3527-4b58-b4e0-4a27b814aef2
 md"## Float64"
+
+# ╔═╡ 98aa72a9-abb4-4207-8185-a4b256ad297b
+md"## Float64 by=abs2"
 
 # ╔═╡ 9cd57e1b-f896-49b5-896d-b8d3c1e7bcc3
 md"## Categorical, 4 Groups"
@@ -112,10 +115,8 @@ end;
 
 # ╔═╡ 799a3043-4020-484f-bbb5-673fde5eb0aa
 begin
-	vfun_Int64sq(n) = rand(Int128,n)
-	square(x) = x*x
-	algorithms_sq = [x->sort(x,by=square), x->sortperm(x,by=square), x->ssortperm(x,by=square)]
-	times_Int64sq = bench(sizes, vfun_Int64sq, algorithms_sq)
+	algorithms_sq = [x->sort(x,by=abs2), x->sortperm(x,by=abs2), x->ssortperm(x,by=abs2)]
+	times_Int64sq = bench(sizes, vfun_Int64, algorithms_sq)
 end;
 
 # ╔═╡ 200d9fbe-3bf0-4e49-9faa-c0cb8e26d9bb
@@ -128,6 +129,11 @@ end;
 begin
 	vfun_Float64(n) = rand(Float64,n)
 	times_Float64 = bench(sizes, vfun_Float64, algorithms)
+end;
+
+# ╔═╡ 34b5eb41-cdf6-4d6c-91d1-50391e345c53
+begin
+	times_Float64sq = bench(sizes, vfun_Float64, algorithms_sq)
 end;
 
 # ╔═╡ b9db5627-e84a-4bb0-a6e7-a35e97e16994
@@ -182,10 +188,10 @@ scatterplot_speed(sizes,times_Int128,labels,"Int128", "Int128")
 scatterplot_speedup(sizes,times_Int128,labels,"Int128", "Int128")
 
 # ╔═╡ ea597909-274d-4cad-b950-325fcaaaa61e
-scatterplot_speed(sizes,times_Int64sq,labels,"Int64_by_square", "Int64 by=x->x*x")
+scatterplot_speed(sizes,times_Int64sq,labels,"Int64_by_abs2", "Int64 by=abs2")
 
 # ╔═╡ ebb3d4d8-0fee-4b5f-aca0-9aa8ec5db3ed
-scatterplot_speedup(sizes,times_Int64sq,labels,"Int64_by_square", "Int64 by=x->x*x")
+scatterplot_speedup(sizes,times_Int64sq,labels,"Int64_by_abs2", "Int64 by=abs2")
 
 # ╔═╡ 8713321b-4159-4197-9a0c-a51c813d520a
 scatterplot_speed(sizes,times_Int64almostpresorted,labels,"Int64_almost_presorted", "Int64, almost presorted")
@@ -198,6 +204,12 @@ scatterplot_speed(sizes,times_Float64,labels,"Float64", "Float64")
 
 # ╔═╡ 8c265189-f4a1-4335-b4d5-064de408d84d
 scatterplot_speedup(sizes,times_Float64,labels,"Float64", "Float64")
+
+# ╔═╡ 2250d2ec-a5a6-491a-b957-901db94c57d4
+scatterplot_speed(sizes,times_Float64sq,labels,"Float64_by_abs2", "Float64 by=abs2")
+
+# ╔═╡ b8eb8049-5f64-4c78-8eaf-db3742fa6d94
+scatterplot_speedup(sizes,times_Float64sq,labels,"Float64_by_abs2", "Float64 by=abs2")
 
 # ╔═╡ 444abc3a-2656-43cc-b249-ce82cbe5a987
 scatterplot_speed(sizes,times_cat4,labels,"Categorical", "Categorical, 4 Groups")
@@ -226,7 +238,7 @@ scatterplot_speedup(sizes,times_IntMissing,labels,"Int64_missing", "Int64, 5% mi
 # ╟─9f3070e2-5fa8-4c89-a087-5ab9b8adc32b
 # ╟─229884cb-59a1-423a-9538-608c7adbb081
 # ╟─cbb857d6-718a-4263-ad2b-bb2a91ab9aec
-# ╠═1b164d4c-793f-45e7-bfe7-d2b9ad5b4628
+# ╟─1b164d4c-793f-45e7-bfe7-d2b9ad5b4628
 # ╟─799a3043-4020-484f-bbb5-673fde5eb0aa
 # ╟─ea597909-274d-4cad-b950-325fcaaaa61e
 # ╟─ebb3d4d8-0fee-4b5f-aca0-9aa8ec5db3ed
@@ -238,6 +250,10 @@ scatterplot_speedup(sizes,times_IntMissing,labels,"Int64_missing", "Int64, 5% mi
 # ╟─b16118bd-28a8-41aa-aa1b-003c29f7731d
 # ╟─60a4b4c4-821c-40c6-961b-956c03d93d55
 # ╟─8c265189-f4a1-4335-b4d5-064de408d84d
+# ╟─98aa72a9-abb4-4207-8185-a4b256ad297b
+# ╟─34b5eb41-cdf6-4d6c-91d1-50391e345c53
+# ╟─2250d2ec-a5a6-491a-b957-901db94c57d4
+# ╟─b8eb8049-5f64-4c78-8eaf-db3742fa6d94
 # ╟─9cd57e1b-f896-49b5-896d-b8d3c1e7bcc3
 # ╟─b9db5627-e84a-4bb0-a6e7-a35e97e16994
 # ╟─444abc3a-2656-43cc-b249-ce82cbe5a987
